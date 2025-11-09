@@ -18,6 +18,8 @@ export const DOCUMENT_TYPES = {
 export const DOCUMENT_LABELS = {
   w9: 'W-9 Tax Form',
   insurance: 'Insurance Certificate',
+  insurance_certificate: 'Insurance Certificate', // Frontend naming
+  business_license: 'Business License',
   diversity_cert: 'Diversity Certification',
   bcp: 'Business Continuity Plan',
   soc2: 'SOC 2 Report',
