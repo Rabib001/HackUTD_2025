@@ -90,7 +90,7 @@ const DashboardPage = () => {
 
           {/* Quick Stats */}
           <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <div className="card">
+            <div className="card glossy gradient-border">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">Vendor ID</p>
@@ -104,7 +104,7 @@ const DashboardPage = () => {
               </div>
             </div>
 
-            <div className="card">
+            <div className="card glossy gradient-border">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">KY3P Assessment</p>
@@ -119,7 +119,7 @@ const DashboardPage = () => {
               </div>
             </div>
 
-            <div className="card">
+            <div className="card glossy gradient-border">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 mb-1">SLP Supplier ID</p>
@@ -173,7 +173,7 @@ const DashboardPage = () => {
 
               {/* Risk Assessment CTA */}
               {vendorData.risk_score && (
-                <div className="card bg-gradient-to-r from-gs-navy to-gs-blue text-white">
+                <div className="card bg-gradient-to-r from-gs-navy to-gs-blue text-white shine-effect">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-xl font-bold mb-2">
@@ -182,7 +182,7 @@ const DashboardPage = () => {
                       <p className="text-blue-100 mb-4">
                         View your detailed risk analysis and compliance breakdown
                       </p>
-                      <Link to="/risk" className="inline-block bg-white text-gs-blue px-6 py-2 rounded-lg font-semibold hover:bg-blue-50 transition">
+                      <Link to="/risk" className="inline-block bg-white text-gs-blue px-6 py-2 rounded-lg font-semibold hover:bg-blue-50 transition shadow-lg">
                         View Risk Report
                       </Link>
                     </div>

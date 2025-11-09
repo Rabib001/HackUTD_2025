@@ -8,25 +8,37 @@ export default {
     extend: {
       colors: {
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+          blue: '#4A90E2',
+          green: '#5CB85C',
+          orange: '#F5A623',
         },
-        gs: {
-          blue: '#005EB8',
-          navy: '#003366',
-          gray: '#6B7280'
-        }
+        neutral: {
+          light: '#F8F9FA',
+          card: '#E9ECEF',
+          gray: '#6C757D',
+        },
+        text: {
+          primary: '#2C3E50',
+          secondary: '#495057',
+        },
+        status: {
+          pending: '#F5A623',
+          approved: '#5CB85C',
+          inProgress: '#4A90E2',
+          rejected: '#DC3545',
+        },
+        sidebar: '#2C3E50',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        heading: ['Poppins', 'Inter', 'sans-serif'],
+      },
+      borderRadius: {
+        'card': '8px',
+      },
+      boxShadow: {
+        'card': '0 2px 8px rgba(0,0,0,0.08)',
+        'card-hover': '0 4px 12px rgba(0,0,0,0.12)',
       }
     },
   },

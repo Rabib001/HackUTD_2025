@@ -35,49 +35,71 @@ const RiskGauge = ({ score, size = 'large' }) => {
   const strokeDashoffset = circumference - (percentage / 100) * circumference
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center mirror-container">
       {/* Circular Gauge */}
-      <div className={`relative ${sizeClasses[size]}`}>
-        <svg className="transform -rotate-90 w-full h-full">
+      <div className={`relative ${sizeClasses[size]} glossy rounded-full p-2`} style={{
+        boxShadow: `0 8px 32px 0 ${
+          config.color === 'green' ? 'rgba(34, 197, 94, 0.3)' :
+          config.color === 'yellow' ? 'rgba(234, 179, 8, 0.3)' :
+          config.color === 'orange' ? 'rgba(249, 115, 22, 0.3)' :
+          'rgba(239, 68, 68, 0.3)'
+        }`
+      }}>
+        <svg className="transform -rotate-90 w-full h-full drop-shadow-lg">
           {/* Background circle */}
           <circle
             cx="50%"
             cy="50%"
             r="45"
             stroke="currentColor"
-            strokeWidth="8"
+            strokeWidth="10"
             fill="none"
             className="text-gray-200"
           />
 
-          {/* Progress circle */}
+          {/* Progress circle with gradient */}
           <circle
             cx="50%"
             cy="50%"
             r="45"
             stroke="currentColor"
-            strokeWidth="8"
+            strokeWidth="10"
             fill="none"
             strokeLinecap="round"
             className={getGaugeColor()}
             style={{
               strokeDasharray: circumference,
               strokeDashoffset: strokeDashoffset,
-              transition: 'stroke-dashoffset 1s ease-in-out'
+              transition: 'stroke-dashoffset 1s ease-in-out',
+              filter: 'drop-shadow(0 0 8px currentColor)'
             }}
           />
         </svg>
 
-        {/* Score in center */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className={`font-bold ${getGaugeColor()}`}>
+        {/* Score in center with shine effect */}
+        <div className="absolute inset-0 flex items-center justify-center shine-effect">
+          <span className={`font-bold ${getGaugeColor()}`} style={{
+            textShadow: `0 2px 10px ${
+              config.color === 'green' ? 'rgba(34, 197, 94, 0.5)' :
+              config.color === 'yellow' ? 'rgba(234, 179, 8, 0.5)' :
+              config.color === 'orange' ? 'rgba(249, 115, 22, 0.5)' :
+              'rgba(239, 68, 68, 0.5)'
+            }`
+          }}>
             {score}
           </span>
         </div>
       </div>
 
-      {/* Risk level label */}
-      <div className={`mt-4 px-4 py-2 rounded-full ${getBgColor()}`}>
+      {/* Risk level label with enhanced styling */}
+      <div className={`mt-4 px-4 py-2 rounded-full ${getBgColor()} shadow-lg`} style={{
+        boxShadow: `0 4px 14px 0 ${
+          config.color === 'green' ? 'rgba(34, 197, 94, 0.3)' :
+          config.color === 'yellow' ? 'rgba(234, 179, 8, 0.3)' :
+          config.color === 'orange' ? 'rgba(249, 115, 22, 0.3)' :
+          'rgba(239, 68, 68, 0.3)'
+        }`
+      }}>
         <span className={`text-sm font-semibold ${getGaugeColor()}`}>
           {config.label}
         </span>

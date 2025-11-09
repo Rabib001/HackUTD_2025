@@ -37,15 +37,15 @@ export const VENDOR_STATUS = {
   ONBOARDING_COMPLETE: 'onboarding_complete'
 };
 
-// Status labels and colors
+// Status labels and colors (matching design system)
 export const STATUS_CONFIG = {
-  submitted: { label: 'Submitted', color: 'blue' },
-  documents_pending: { label: 'Documents Pending', color: 'yellow' },
-  under_review: { label: 'Under Review', color: 'yellow' },
-  risk_assessment: { label: 'Risk Assessment', color: 'yellow' },
-  approved: { label: 'Approved', color: 'green' },
-  rejected: { label: 'Rejected', color: 'red' },
-  onboarding_complete: { label: 'Onboarding Complete', color: 'green' }
+  submitted: { label: 'Submitted', color: 'inProgress', hex: '#4A90E2' },
+  documents_pending: { label: 'Documents Pending', color: 'pending', hex: '#F5A623' },
+  under_review: { label: 'Under Review', color: 'inProgress', hex: '#4A90E2' },
+  risk_assessment: { label: 'Risk Assessment', color: 'inProgress', hex: '#4A90E2' },
+  approved: { label: 'Approved', color: 'approved', hex: '#5CB85C' },
+  rejected: { label: 'Rejected', color: 'rejected', hex: '#DC3545' },
+  onboarding_complete: { label: 'Onboarding Complete', color: 'approved', hex: '#5CB85C' }
 };
 
 // Risk levels
