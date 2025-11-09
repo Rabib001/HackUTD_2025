@@ -13,22 +13,53 @@ const VendorQuestionnairePage = () => {
 
     try {
       const vendorId = localStorage.getItem('vendorId')
-      
-      // TODO: Replace with actual API call
-      console.log('Submitting questionnaire:', { vendorId, ...formData })
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
+
+      if (!vendorId) {
+        setError('Vendor ID not found. Please register first.')
+        setLoading(false)
+        return
+      }
+
+      console.log('Submitting questionnaire for vendor:', vendorId)
+
+      // Call API to save questionnaire
+      const apiUrl = import.meta.env.VITE_API_URL
+
+      if (!apiUrl) {
+        console.warn('API URL not configured, using mock mode')
+        // Simulate API call for demo
+        await new Promise(resolve => setTimeout(resolve, 1500))
+        localStorage.setItem('questionnaireComplete', 'true')
+        navigate('/vendor/dashboard')
+        return
+      }
+
+      const response = await fetch(`${apiUrl}/vendors/${vendorId}/questionnaire`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `HTTP ${response.status}: Failed to submit questionnaire`)
+      }
+
+      const result = await response.json()
+      console.log('Questionnaire submitted successfully:', result)
+
       // Store completion status
       localStorage.setItem('questionnaireComplete', 'true')
-      
+      localStorage.setItem('questionnaireCompletionPercentage', result.completion_percentage || 100)
+
       // Navigate to dashboard
       navigate('/vendor/dashboard')
-      
+
     } catch (err) {
       console.error('Questionnaire submission error:', err)
-      setError('Failed to submit questionnaire. Please try again.')
+      setError(err.message || 'Failed to submit questionnaire. Please try again.')
     } finally {
       setLoading(false)
     }

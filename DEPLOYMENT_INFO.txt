@@ -1,0 +1,11 @@
+Deployment completed at: Sun Nov  9 09:27:13 CST 2025
+AWS Account: 560271561576
+AWS Region: us-east-1
+
+S3 Bucket: onboardinghubstoragestack-vendordocumentbucket0e7c-kgvdteuuvehh
+API Gateway: https://x47tqoty73.execute-api.us-east-1.amazonaws.com/prod/
+Lambda ARN: arn:aws:lambda:us-east-1:560271561576:function:OnboardingHubLambdaStack-DocumentProcessor3D49A083-jyyz7GgBTIZj
+Database: onboardinghubdatabasestack-vendordatabase6a1ca1c3-akncbtikc7zq.cs1oouckekys.us-east-1.rds.amazonaws.com
+
+Frontend URL: http://localhost:5173
+Frontend API: https://x47tqoty73.execute-api.us-east-1.amazonaws.com/prod/
