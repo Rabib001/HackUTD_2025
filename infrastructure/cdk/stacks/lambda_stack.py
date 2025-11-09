@@ -248,8 +248,29 @@ class LambdaStack(Stack):
             )
         )
 
-        # Note: S3 event notifications will be configured in storage_stack.py
-        # to avoid circular dependencies
+        # Note: S3 event notifications must be configured post-deployment to avoid
+        # circular dependency (StorageStack -> LambdaStack via event notification)
+        # Run: infrastructure/scripts/configure_s3_notifications.sh after deployment
+
+        # ====================
+        # Lambda Function: Questionnaire Handler
+        # ====================
+        self.questionnaire_handler = lambda_.Function(
+            self, "QuestionnaireHandler",
+            runtime=lambda_.Runtime.PYTHON_3_11,
+            handler="index.handler",
+            code=lambda_.Code.from_asset("../lambda/questionnaire_handler"),
+            timeout=Duration.seconds(30),
+            memory_size=512,
+            environment=common_env,
+            vpc=vpc,
+            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS),
+            description="Save vendor KY3P questionnaire responses",
+            layers=[psycopg2_layer],
+        )
+
+        # Grant database access
+        db_secret.grant_read(self.questionnaire_handler)
 
         # ====================
         # Lambda Function: Database Initialization
@@ -300,4 +321,10 @@ class LambdaStack(Stack):
             self, "DbInitHandlerArn",
             value=self.db_init_handler.function_arn,
             description="Database Initialization Lambda ARN",
+        )
+
+        CfnOutput(
+            self, "QuestionnaireHandlerArn",
+            value=self.questionnaire_handler.function_arn,
+            description="Questionnaire Handler Lambda ARN",
         )

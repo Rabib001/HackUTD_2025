@@ -42,7 +42,7 @@ database_stack = DatabaseStack(
     env=env
 )
 
-# Stack 4: Lambda Functions
+# Stack 4: Lambda Functions (includes S3 event notifications for auto document processing)
 lambda_stack = LambdaStack(
     app, "OnboardingHubLambdaStack",
     vpc=vpc_stack.vpc,
@@ -54,10 +54,6 @@ lambda_stack = LambdaStack(
     env=env
 )
 
-# Note: S3 event notifications for document processor are configured
-# in a separate manual step after deployment to avoid circular dependencies
-# See: infrastructure/scripts/setup_s3_notifications.sh
-
 # Stack 5: API Gateway
 api_stack = ApiStack(
     app, "OnboardingHubApiStack",
@@ -66,6 +62,7 @@ api_stack = ApiStack(
     risk_score_handler=lambda_stack.risk_score_handler,
     approve_handler=lambda_stack.approve_handler,
     create_vendor_handler=lambda_stack.create_vendor_handler,
+    questionnaire_handler=lambda_stack.questionnaire_handler,
     db_init_handler=lambda_stack.db_init_handler,
     description="REST API Gateway for vendor onboarding portal",
     env=env

@@ -19,6 +19,7 @@ class ApiStack(Stack):
         risk_score_handler: lambda_.Function,
         approve_handler: lambda_.Function,
         create_vendor_handler: lambda_.Function,
+        questionnaire_handler: lambda_.Function,
         db_init_handler: lambda_.Function,
         **kwargs
     ) -> None:
@@ -89,6 +90,19 @@ class ApiStack(Stack):
         vendor_upload.add_method(
             "POST",
             apigw.LambdaIntegration(upload_handler),
+        )
+
+        # POST /vendors/{id}/questionnaire - Submit KY3P questionnaire
+        vendor_questionnaire = vendor_by_id.add_resource("questionnaire")
+        vendor_questionnaire.add_method(
+            "POST",
+            apigw.LambdaIntegration(questionnaire_handler),
+        )
+
+        # GET /vendors/{id}/questionnaire - Get questionnaire (future enhancement)
+        vendor_questionnaire.add_method(
+            "GET",
+            apigw.LambdaIntegration(questionnaire_handler),
         )
 
         # ====================
