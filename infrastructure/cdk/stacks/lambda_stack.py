@@ -1,5 +1,24 @@
 """
 Lambda Stack - Serverless functions for document processing and business logic
+
+IMPORTANT: psycopg2 Lambda Layer Required
+==========================================
+All Lambda functions that connect to PostgreSQL require the psycopg2 library.
+Since psycopg2 has C dependencies, it must be compiled for the Lambda runtime.
+
+To add psycopg2 layer:
+1. Use an existing public layer ARN (recommended for quick setup):
+   arn:aws:lambda:us-east-1:898466741470:layer:psycopg2-py38:1
+
+2. Or build your own layer:
+   - Create a directory: mkdir -p python/lib/python3.11/site-packages
+   - Install: pip install psycopg2-binary -t python/lib/python3.11/site-packages
+   - Zip: zip -r psycopg2-layer.zip python/
+   - Upload to Lambda Layers in AWS Console
+   - Add layer ARN to each function below
+
+Uncomment the 'layers' parameter in each Lambda function definition below
+and replace with your layer ARN.
 """
 from aws_cdk import (
     Stack,
@@ -23,16 +42,26 @@ class LambdaStack(Stack):
         vpc: ec2.Vpc,
         document_bucket: s3.Bucket,
         kms_key: kms.Key,
-        database: rds.DatabaseCluster,
+        database,  # Can be DatabaseCluster or DatabaseInstance
         db_secret: secretsmanager.Secret,
         **kwargs
     ) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         # Common environment variables for Lambda functions
+        # Handle both DatabaseCluster and DatabaseInstance
+        if hasattr(database, 'cluster_endpoint'):
+            # DatabaseCluster
+            db_host = database.cluster_endpoint.hostname
+            db_port = database.cluster_endpoint.port
+        else:
+            # DatabaseInstance
+            db_host = database.db_instance_endpoint_address
+            db_port = 5432
+
         common_env = {
-            'DB_HOST': database.cluster_endpoint.hostname,
-            'DB_PORT': str(database.cluster_endpoint.port),
+            'DB_HOST': db_host,
+            'DB_PORT': str(db_port),
             'DB_NAME': 'onboarding_hub',
             'DB_SECRET_ARN': db_secret.secret_arn,
             'DOCUMENT_BUCKET': document_bucket.bucket_name,
@@ -76,7 +105,7 @@ class LambdaStack(Stack):
 
         # Grant database access
         db_secret.grant_read(self.create_vendor_handler)
-        database.grant_data_api_access(self.create_vendor_handler)
+        # Database security group will be modified in database_stack to allow access from Lambda security groups
 
         # ====================
         # Lambda Function: Status Handler
@@ -96,7 +125,7 @@ class LambdaStack(Stack):
 
         # Grant database access
         db_secret.grant_read(self.status_handler)
-        database.grant_data_api_access(self.status_handler)
+        # Database security group will be modified in database_stack to allow access from Lambda security groups
 
         # ====================
         # Lambda Function: Risk Scoring
@@ -116,7 +145,7 @@ class LambdaStack(Stack):
 
         # Grant database access
         db_secret.grant_read(self.risk_score_handler)
-        database.grant_data_api_access(self.risk_score_handler)
+        # Database security group will be modified in database_stack to allow access from Lambda security groups
 
         # Grant Textract permissions (for Person 3's integration)
         self.risk_score_handler.add_to_role_policy(
@@ -158,7 +187,7 @@ class LambdaStack(Stack):
 
         # Grant database access
         db_secret.grant_read(self.approve_handler)
-        database.grant_data_api_access(self.approve_handler)
+        # Database security group will be modified in database_stack to allow access from Lambda security groups
 
         # Grant SES permissions for email notifications
         self.approve_handler.add_to_role_policy(
@@ -167,6 +196,25 @@ class LambdaStack(Stack):
                 resources=["*"],
             )
         )
+
+        # ====================
+        # Lambda Function: Database Initialization
+        # ====================
+        self.db_init_handler = lambda_.Function(
+            self, "DbInitHandler",
+            runtime=lambda_.Runtime.PYTHON_3_11,
+            handler="index.handler",
+            code=lambda_.Code.from_asset("../lambda/db_init"),
+            timeout=Duration.seconds(120),
+            memory_size=512,
+            environment=common_env,
+            vpc=vpc,
+            vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS),
+            description="Initialize RDS database schema and seed data",
+        )
+
+        # Grant database access
+        db_secret.grant_read(self.db_init_handler)
 
         # Outputs
         CfnOutput(
@@ -185,4 +233,10 @@ class LambdaStack(Stack):
             self, "RiskScoreHandlerArn",
             value=self.risk_score_handler.function_arn,
             description="Risk Score Handler Lambda ARN",
+        )
+
+        CfnOutput(
+            self, "DbInitHandlerArn",
+            value=self.db_init_handler.function_arn,
+            description="Database Initialization Lambda ARN",
         )
